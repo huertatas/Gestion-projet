@@ -1,8 +1,75 @@
-import Head from 'next/head'
-import Image from 'next/image'
-import styles from '../styles/Home.module.css'
+import Head from "next/head";
+import Image from "next/image";
+import styles from "../styles/Home.module.css";
+import { useState } from "react";
+// import { useCookies } from "react-cookie";
 
 export default function Home() {
+  const [isLogged, setIsLogged] = useState(false);
+  const [mail, setMail] = useState("");
+  const [password, setPassword] = useState("");
+  const [token, setToken] = useState("");
+  const [baseList, setBaseList] = useState(false);
+  const [base, setBase] = useState("");
+  const [baseSelectioned, setBaseSelectioned] = useState(false);
+
+  // const [cookies, setCookie] = useCookies(["session"]);
+
+  // console.log(cookies, "cookies");
+
+  const handleListBase = () => {
+    fetch(`https://141.95.150.29/api/list_base?session=${token}`, {
+      method: "GET",
+      credentials: "include",
+    }).then(async (res) => {
+      const recep = await res.json();
+      setBase(recep.result["Projet 1"]);
+      setBaseList(true);
+      console.log(recep.result["Projet 1"]);
+    });
+  };
+
+  const chooseListBase = () => {
+    fetch(`https://141.95.150.29/api/use_base?session=${token}`, {
+      method: "POST",
+      credentials: "include",
+      body: new URLSearchParams({
+        base: base,
+      }),
+    }).then(async (res) => {
+      const recep = await res.json();
+      console.log("base selectionné", recep);
+      setBaseSelectioned(true);
+    });
+  };
+
+  const handleLogin = () => {
+    if (!mail || !password) {
+      return;
+    }
+
+    fetch("https://141.95.150.29/api/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      body: new URLSearchParams({
+        username: mail,
+        password: password,
+      }),
+    })
+      .then(async (res) => {
+        const recep = await res.json();
+        setIsLogged(true);
+        setToken(recep.token);
+        console.log("token->", recep.token);
+        console.log(recep);
+      })
+      .catch((e) => {
+        console.log("error ->", e);
+      });
+  };
+
   return (
     <div className={styles.container}>
       <Head>
@@ -13,57 +80,46 @@ export default function Home() {
 
       <main className={styles.main}>
         <h1 className={styles.title}>
-          Welcome to <a href="https://nextjs.org">Next.js!</a>
+          <div
+            style={{ width: "100px", height: "100px", position: "relative" }}
+          >
+            <Image
+              src="/logo-gp-app.png"
+              alt="Logo Iphoto"
+              layout="fill"
+              objectFit="contain"
+            />
+          </div>
         </h1>
-
-        <p className={styles.description}>
-          Get started by editing{' '}
-          <code className={styles.code}>pages/index.js</code>
-        </p>
-
-        <div className={styles.grid}>
-          <a href="https://nextjs.org/docs" className={styles.card}>
-            <h2>Documentation &rarr;</h2>
-            <p>Find in-depth information about Next.js features and API.</p>
-          </a>
-
-          <a href="https://nextjs.org/learn" className={styles.card}>
-            <h2>Learn &rarr;</h2>
-            <p>Learn about Next.js in an interactive course with quizzes!</p>
-          </a>
-
-          <a
-            href="https://github.com/vercel/next.js/tree/canary/examples"
-            className={styles.card}
-          >
-            <h2>Examples &rarr;</h2>
-            <p>Discover and deploy boilerplate example Next.js projects.</p>
-          </a>
-
-          <a
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className={styles.card}
-          >
-            <h2>Deploy &rarr;</h2>
-            <p>
-              Instantly deploy your Next.js site to a public URL with Vercel.
-            </p>
-          </a>
+        <div className="block-gene-test">
+          {!isLogged && (
+            <div className="login">
+              <input
+                onChange={(e) => {
+                  setMail(e.currentTarget.value);
+                }}
+                type="text"
+              ></input>
+              <input
+                onChange={(e) => {
+                  setPassword(e.currentTarget.value);
+                }}
+                type="password"
+              ></input>
+              <button onClick={handleLogin}>login</button>
+            </div>
+          )}
+          {isLogged && (
+            <div className="login">
+              <button onClick={handleListBase}>
+                lancer recherche list base
+              </button>
+            </div>
+          )}
+          {baseList && <div onClick={chooseListBase}>{base}</div>}
+          {baseSelectioned && <div>Base selectionné</div>}
         </div>
       </main>
-
-      <footer className={styles.footer}>
-        <a
-          href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Powered by{' '}
-          <span className={styles.logo}>
-            <Image src="/vercel.svg" alt="Vercel Logo" width={72} height={16} />
-          </span>
-        </a>
-      </footer>
     </div>
-  )
+  );
 }

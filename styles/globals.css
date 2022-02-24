@@ -14,3 +14,20 @@ a {
 * {
   box-sizing: border-box;
 }
+
+.block-gene-test {
+  height: 460px;
+  width: 73%;
+  border-radius: 10px;
+  box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+  overflow-y: scroll;
+}
+
+.login {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
