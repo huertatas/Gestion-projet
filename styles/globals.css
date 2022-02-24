@@ -31,3 +31,10 @@ a {
   align-items: center;
   flex-direction: column;
 }
+
+.base-donne {
+  border: 1px solid black;
+  height: 50px;
+  cursor: pointer;
+  border-radius: 10px;
+}

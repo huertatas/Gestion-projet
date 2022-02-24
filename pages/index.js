@@ -116,7 +116,7 @@ export default function Home() {
               </button>
             </div>
           )}
-          {baseList && <div onClick={chooseListBase}>{base}</div>}
+          {baseList && <div className="base-donne" onClick={chooseListBase}>{base}</div>}
           {baseSelectioned && <div>Base selectionné</div>}
         </div>
       </main>
